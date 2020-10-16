@@ -1,2 +1,61 @@
-# ece6460_project_ideas
-Demos of some project ideas for ECE 6460
+# Project Ideas for ECE 6460
+
+This repository contains starting points and configuration for some project ideas.
+
+## Simulation Projects
+
+### Adaptive Cruise Control
+
+### Roundabout Negotiation
+
+### Lane Keeping with Lane Change
+
+## Real Data Projects
+
+The following projects involve processing ROS bag file data recorded from a real autonomous test vehicle, and represent relevant problems in the autonomous vehicle industry. The bag files to use for these sample projects can be found [here](https://www.secs.oakland.edu/~mtradovn/ece_6460/sample_bags/).
+
+### LIDAR Localization
+
+
+#### Setup
+The following four repositories must be cloned into your ROS workspace: hdl_graph_slam, hdl_localization, ndt_omp, fast_gicp
+```
+git clone https://github.com/robustify/hdl_graph_slam.git
+git clone https://github.com/robustify/hdl_localization.git
+git clone https://github.com/koide3/ndt_omp.git
+git clone https://github.com/SMRT-AIST/fast_gicp.git --recursive
+```
+After cloning the repositories, install binary packages they depend on by running `deps.bash` from the root folder of the workspace.
+
+Download `lidar_slam_example.bag` to your computer.
+
+#### Build a Map
+Start up the map building software:
+```
+roslaunch lidar_slam_project build_map.launch
+```
+Play the bag file to start building the map. Depending on the capability of your CPU, you might have to play the bag at a slower rate. 
+```
+rosbag play --clock lidar_slam_example.bag -r 0.75
+```
+
+#### Save Map
+Call the map save service to save the map to a `.pcd` point cloud file:
+```
+rosservice call /hdl_graph_slam/save_map
+```
+
+#### Localize on the Map
+Stop the map building software and bag playback. Move the saved point cloud file and its corresponding `.utm` file into the `data` folder inside the `hdl_localization` package. Then, start the localization software:
+```
+roslaunch lidar_slam_project lidar_localization.launch
+```
+Play the same bag file again. In Rviz, click the "2D Pose Estimate" button, then click where the vehicle starts on the map, drag in the direction of the way the vehicle is facing, and let go. This initializes the localization estimate.
+
+### Camera / LIDAR Fusion
+
+### Stereo Camera Processing
+
+### RADAR / LIDAR Fusion
+
+ 
