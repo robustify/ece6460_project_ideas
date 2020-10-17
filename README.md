@@ -51,8 +51,17 @@ Stop the map building software and bag playback. Move the saved point cloud file
 roslaunch lidar_slam_project lidar_localization.launch
 ```
 Play the same bag file again. In Rviz, click the "2D Pose Estimate" button, then click where the vehicle starts on the map, drag in the direction of the way the vehicle is facing, and let go. This initializes the localization estimate.
+### Camera / LIDAR Fusion (More Info Soon)
+![Camera / LIDAR Fusion](img/camera_lidar_fusion.png)
 
-### Camera / LIDAR Fusion
+Download the `camera_lidar_fusion.bag` to your computer. Start the software:
+```
+roslaunch camera_lidar_project camera_lidar_fusion.launch
+```
+Then play the bag file:
+```
+rosbag play --clock camera_lidar_fusion.bag
+```
 
 ### Stereo Camera Processing
 

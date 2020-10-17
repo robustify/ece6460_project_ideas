@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>camera_lidar_project</name>
+  <version>0.0.0</version>
+  <description>
+    Starting point for a project based on fusing camera and LIDAR data
+  </description>
+  <maintainer email="mtradovn@oakland.edu">Micho Radovnikovich</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>dynamic_reconfigure</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>image_transport</depend>
+  <depend>image_geometry</depend>
+  <depend>cv_bridge</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>avs_lecture_msgs</depend>
+
+</package>

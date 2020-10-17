@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="camera_name" default="camera" />
+  <arg name="camera_serial" default="19140982" />
+  <arg name="camera_info_file" default="$(find camera_lidar_project)/yaml/camera_info.yaml" />
+
+  <group ns="$(arg camera_name)" >
+    <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" cwd="node" output="screen" />
+
+    <!-- Debayer the image -->
+    <node pkg="nodelet" type="nodelet" name="image_proc_debayer" args="load image_proc/debayer camera_nodelet_manager" />
+
+    <!-- Apply lens rectification -->
+    <node pkg="nodelet" type="nodelet" name="image_proc_rectify" args="load image_proc/rectify camera_nodelet_manager" >
+      <remap from="image_mono" to="image_color" />
+      <remap from="image_rect" to="image_rect_color" />
+    </node>
+
+    <!-- Offline bag playback from compressed image topic -->
+    <node pkg="camera_lidar_project" type="pub_camera_info.py" name="pub_camera_info" >
+      <param name="yaml_file" value="$(arg camera_info_file)" />
+    </node>
+    <node pkg="image_transport" type="republish" name="republish" args="compressed in:=/camera/image_raw raw out:=/camera/image_raw" />
+  </group>
+
+</launch>

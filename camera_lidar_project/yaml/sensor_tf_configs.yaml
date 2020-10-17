@@ -1,0 +1,13 @@
+sensor_tf_configs:
+  - parent_frame: base_footprint
+    child_frame: cepton_center
+    position: [3.5, -0.1, 0.55]
+    orientation: [-0.03, 0.0, -1.7007]
+  - parent_frame: base_footprint
+    child_frame: camera_optical
+    position: [2.0, -0.1, 1.2]
+    orientation: [0.0, -0.07, 0.0]
+  - parent_frame: camera_optical
+    child_frame: camera
+    position: [0.0, 0.0, 0.0]
+    orientation: [-1.5707, 0.0, -1.5707]

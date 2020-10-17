@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<launch>
+  
+  <arg name="offline" default="true" />
+  <param name="use_sim_time" value="$(arg offline)" />
+
+  <!-- Example node to get bounding boxes in an image corresponding to LIDAR clusters -->
+  <node pkg="camera_lidar_project" type="camera_lidar_project" name="camera_lidar_fusion" output="screen" />
+
+  <!-- Read raw images from the bag file. Need to replace with your particular camera setup -->
+  <include file="$(find camera_lidar_project)/launch/mono_camera_driver.launch" >
+    <arg name="camera_info_file" value="$(find camera_lidar_project)/yaml/camera_info.yaml" />
+  </include>
+
+  <!-- Static TF frames to make LIDAR and image data line up properly                     x    y      z      yaw     pitch  roll   parent         child -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="footprint_to_optical" args="2.0 -0.185  1.2   -0.005  -0.07   0.0    base_footprint camera_optical" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="optical_to_camera"    args="0.0  0.0    0.0   -1.5707  0.0   -1.5707 camera_optical camera" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="footprint_to_lidar"   args="3.5 -0.1    0.55  -1.7007  0.0   -0.03   base_footprint cepton_center" />
+
+  <!-- Process CAN messages from Dataspeed drive-by-wire to visualize the car in Rviz -->
+  <include file="$(find dbw_mkz_can)/launch/dbw.launch" >
+    <arg name="live" value="false"/>
+    <arg name="can_ns" value="/can_bus_dbw" />
+  </include>
+
+  <include file="$(find avs_lecture_sensor_config)/launch/euclidean_clustering.launch" >
+    <arg name="raw_points_topic" value="/cepton/points_raw" />
+  </include>
+  
+  <node pkg="rviz" type="rviz" name="camera_lidar_fusion_viz" args="-d $(find camera_lidar_project)/rviz/rviz_config.rviz" respawn="true" />
+
+</launch>
