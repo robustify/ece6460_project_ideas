@@ -15,7 +15,7 @@ This repository contains starting points and configuration for some project idea
 The following projects involve processing ROS bag file data recorded from a real autonomous test vehicle, and represent relevant problems in the autonomous vehicle industry. The bag files to use for these sample projects can be found [here](https://www.secs.oakland.edu/~mtradovn/ece_6460/sample_bags/).
 
 ### LIDAR Localization
-
+![LIDAR Mapping](img/lidar_map.png)
 
 #### Setup
 The following four repositories must be cloned into your ROS workspace: hdl_graph_slam, hdl_localization, ndt_omp, fast_gicp
