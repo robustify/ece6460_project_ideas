@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="camera_name" default="stereo" />
+  <arg name="left_serial" default="19220523" />
+  <arg name="right_serial" default="19140984" />
+  <arg name="left_camera_info_file" default="$(find stereo_camera_project)/yaml/left_camera_info.yaml" />
+  <arg name="right_camera_info_file" default="$(find stereo_camera_project)/yaml/right_camera_info.yaml" />
+
+  <arg name="process_stereo" default="true" />
+
+  <arg name="full_manager_name" value="/$(arg camera_name)/camera_nodelet_manager" />
+
+  <group if="$(arg process_stereo)" ns="$(arg camera_name)_decimated" >
+    <node pkg="nodelet" type="nodelet" name="stereo_proc_disparity" args="load stereo_image_proc/disparity $(arg full_manager_name)" >
+      <param name="disparity_range" value="96" />
+      <param name="speckle_size" value="150" />
+      <param name="speckle_range" value="1" />
+      <param name="approximate_sync" value="true" />
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="stereo_proc_point_cloud" args="load stereo_image_proc/point_cloud2 $(arg full_manager_name)" >
+      <param name="approximate_sync" value="true" />
+    </node>
+
+    <group ns="left" >
+      <!-- Apply lens rectification -->
+      <node pkg="nodelet" type="nodelet" name="image_proc_debayer" args="load image_proc/debayer $(arg full_manager_name)" />
+      <node pkg="nodelet" type="nodelet" name="image_proc_rectify_mono" args="load image_proc/rectify $(arg full_manager_name)" />
+      <node pkg="nodelet" type="nodelet" name="image_proc_rectify_color" args="load image_proc/rectify $(arg full_manager_name)" >
+        <remap from="image_mono" to="image_color" />
+        <remap from="image_rect" to="image_rect_color" />
+      </node>
+    </group>
+
+    <group ns="right" >
+      <!-- Apply lens rectification -->
+      <node pkg="nodelet" type="nodelet" name="image_proc_debayer" args="load image_proc/debayer $(arg full_manager_name)" />
+      <node pkg="nodelet" type="nodelet" name="image_proc_rectify_mono" args="load image_proc/rectify $(arg full_manager_name)" />
+      <node pkg="nodelet" type="nodelet" name="image_proc_rectify_color" args="load image_proc/rectify $(arg full_manager_name)" >
+        <remap from="image_mono" to="image_color" />
+        <remap from="image_rect" to="image_rect_color" />
+      </node>
+    </group>
+
+    <node pkg="rviz" type="rviz" name="stereo_cloud_viz" args="-d $(find stereo_camera_project)/rviz/stereo_test.rviz" respawn="true" />
+  </group>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="ground_to_stereo" args="0 0 1.0 -1.5707 0 -1.487 ground camera_left" />
+
+  <group ns="$(arg camera_name)" >
+    <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" cwd="node" output="screen" />
+    
+    <group ns="left" >
+
+      <node pkg="nodelet" type="nodelet" name="image_proc_decimate" args="load image_proc/crop_decimate $(arg full_manager_name)" >
+        <param name="decimation_x" value="4" />
+        <param name="decimation_y" value="4" />
+        <param name="x_offset" value="0" />
+        <param name="y_offset" value="0" />
+        <param name="width" value="0" />
+        <param name="height" value="0" />
+        <remap from="camera" to="/$(arg camera_name)/left"/>
+        <remap from="camera_out" to="/$(arg camera_name)_decimated/left"/>
+      </node>
+
+      <!-- Offline bag playback from compressed image topic -->
+      <node pkg="image_transport" type="republish" name="republish" args="compressed in:=image_raw raw out:=image_raw" />
+
+      <node pkg="stereo_camera_project" type="pub_camera_info.py" name="pub_camera_info" >
+        <param name="yaml_file" value="$(arg left_camera_info_file)" />
+      </node>
+    </group>
+
+    <group ns="right" >
+
+      <node pkg="nodelet" type="nodelet" name="image_proc_decimate" args="load image_proc/crop_decimate $(arg full_manager_name)" >
+        <param name="decimation_x" value="4" />
+        <param name="decimation_y" value="4" />
+        <param name="x_offset" value="0" />
+        <param name="y_offset" value="0" />
+        <param name="width" value="0" />
+        <param name="height" value="0" />
+        <remap from="camera" to="/$(arg camera_name)/right"/>
+        <remap from="camera_out" to="/$(arg camera_name)_decimated/right"/>
+      </node>
+
+      <!-- Offline bag playback from compressed image topic -->
+      <node pkg="image_transport" type="republish" name="republish" args="compressed in:=image_raw raw out:=image_raw" />
+
+      <node pkg="stereo_camera_project" type="pub_camera_info.py" name="pub_camera_info" >
+        <param name="yaml_file" value="$(arg right_camera_info_file)" />
+      </node>
+    </group>
+  </group>
+
+  <!-- Run stereo camera viewer -->
+  <node pkg="image_view" type="stereo_view" name="stereo_view" >
+    <param name="approximate_sync" value="true" />
+    <remap from="stereo" to="stereo_decimated" />
+    <remap from="image" to="image_rect_color" />
+  </node>
+
+</launch>

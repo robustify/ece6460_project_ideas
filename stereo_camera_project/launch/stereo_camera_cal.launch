@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="right_topic" default="/stereo/right/image_raw" />
+  <arg name="left_topic" default="/stereo/left/image_raw" />
+  <node pkg="camera_calibration" type="cameracalibrator.py" name="calibrator" args="--size 8x6 --square 0.0254 --approximate 0.001 --no-service-check" output="screen" >
+    <remap from="right" to="$(arg right_topic)" />
+    <remap from="left" to="$(arg left_topic)" />
+    <remap from="left_camera" to="/stereo/left" />
+    <remap from="right_camera" to="/stereo/right" />
+  </node>
+
+  <arg name="live" default="true" />
+  <arg name="camera_name" default="stereo" />
+  <include file="$(find ece6460_camera_cal_example)/launch/stereo_camera_driver.launch" >
+    <arg name="camera_name" value="$(arg camera_name)" />
+    <arg name="process_stereo" value="false" />
+  </include>
+
+</launch>

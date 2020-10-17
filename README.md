@@ -2,14 +2,6 @@
 
 This repository contains starting points and configuration for some project ideas.
 
-## Simulation Projects
-
-### Adaptive Cruise Control
-
-### Roundabout Negotiation
-
-### Lane Keeping with Lane Change
-
 ## Real Data Projects
 
 The following projects involve processing ROS bag file data recorded from a real autonomous test vehicle, and represent relevant problems in the autonomous vehicle industry. The bag files to use for these sample projects can be found [here](https://www.secs.oakland.edu/~mtradovn/ece_6460/sample_bags/).
@@ -64,8 +56,20 @@ Then play the bag file:
 rosbag play --clock camera_lidar_fusion.bag
 ```
 
-### Stereo Camera Processing
+### Stereo Camera Processing (More Info Soon)
+![Stereo Camera Processing](img/stereo_processing.png)
 
-### RADAR / LIDAR Fusion
+Download the `stereo_camera_example.bag` to your computer. Start the software:
+```
+roslaunch stereo_camera_project stereo_camera_driver.launch
+```
+Then play the bag file:
+```
+rosbag play --clock stereo_camera_example.bag
+```
 
- 
+### RADAR / LIDAR Fusion (More Info Soon)
+
+
+
+## Simulation Projects (Coming Soon)
