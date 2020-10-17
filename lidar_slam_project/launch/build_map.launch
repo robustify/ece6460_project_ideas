@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<launch>
+
+  <param name="use_sim_time" value="true" />
+
+  <!-- Drive by wire -->
+  <include file="$(find dbw_mkz_can)/launch/dbw.launch" >
+    <arg name="live" value="false"/>
+    <arg name="can_ns" value="/can_bus_dbw" />
+  </include>
+  
+  <!-- GPS driver -->
+  <arg name="novatel" default="true" />
+  <include if="$(arg novatel)" file="$(find novatel_gps_eth)/launch/driver.launch" >
+    <arg name="ns"          value="gps" />
+    <arg name="offline"     value="true" />
+  </include>
+
+  <!-- LIDAR driver -->
+  <include file="$(find avs_lecture_sensor_config)/launch/ouster_driver.launch" >
+    <arg name="replay"           value="true" />
+    <arg name="name"             value="ouster" />
+    <arg name="lidar_frame_name" value="ouster" />
+  </include>
+  
+  <include file="$(find hdl_graph_slam)/launch/hdl_graph_slam.launch" >
+    <arg name="nodelet_manager" value="hdl_slam_nodelet_manager" />
+    <arg name="enable_floor_detection" value="false" />
+    <arg name="enable_gps" value="true" />
+    <arg name="enable_imu_acc" value="true" />
+    <arg name="enable_imu_ori" value="true" />
+    <arg name="points_topic" value="/ouster/points_raw" />
+    <arg name="odom_frame" value="odom" />
+    <arg name="base_frame" value="base_footprint" />
+    <arg name="lidar_frame" value="ouster" />
+    <arg name="lidar_offset" value="0.6 0.0 1.5" />
+    <arg name="lidar_orientation" value="-0.02 -0.04 0.0" />
+    <arg name="gps_imu_topic" value="/gps/imu" />
+    <arg name="gps_fix_topic" value="/gps/fix" />
+  </include>
+  
+  <node pkg="rviz" type="rviz" name="offline_viz" args="-d $(find lidar_slam_project)/rviz/build_map.rviz" respawn="true" />
+
+</launch>

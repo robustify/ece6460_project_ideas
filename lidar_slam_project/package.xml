@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <!--
+  [Required] The name of the package goes in the <name> tag
+  -->
+  <name>lidar_slam_project</name>
+  
+  <!--
+  [Required] The following tags are required, but are only
+             meaningful when releasing binaries into the
+             ROS buildfarm
+  -->
+  <version>0.0.0</version>
+  <description>
+    Starting point for a project based on LIDAR SLAM
+  </description>
+  <license>BSD</license>
+  <maintainer email="mtradovn@oakland.edu">Micho Radovnikovich</maintainer>
+  
+  <!--
+  [Required] Make this package depend on the catkin build tool
+  -->
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <!--
+  [Required if using C++] Make this package depend on the roscpp libraries
+  -->
+<!--   <depend>roscpp</depend> -->
+</package>
