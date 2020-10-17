@@ -17,7 +17,7 @@ git clone https://github.com/robustify/hdl_localization.git
 git clone https://github.com/koide3/ndt_omp.git
 git clone https://github.com/SMRT-AIST/fast_gicp.git --recursive
 ```
-After cloning the repositories, install binary packages they depend on by running `deps.bash` from the root folder of the workspace.
+After cloning the repositories, install binary packages they depend on by running `deps.bash` from the root folder of the workspace. Finally, compile your ROS workspace with `release.bash`.
 
 Download `campus_drive_083019.bag` to your computer.
 
