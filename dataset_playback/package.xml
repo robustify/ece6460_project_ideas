@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <!--
+  [Required] The name of the package goes in the <name> tag
+  -->
+  <name>dataset_playback</name>
+  
+  <!--
+  [Required] The following tags are required, but are only
+             meaningful when releasing binaries into the
+             ROS buildfarm
+  -->
+  <version>0.0.0</version>
+  <description>
+    Launch configuration for playing back numbered dataset bag files
+  </description>
+  <license>BSD</license>
+  <maintainer email="mtradovn@oakland.edu">Micho Radovnikovich</maintainer>
+  
+  <!--
+  [Required] Make this package depend on the catkin build tool
+  -->
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <!--
+  [Required if using C++] Make this package depend on the roscpp libraries
+  -->
+<!--   <depend>roscpp</depend> -->
+</package>

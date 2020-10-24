@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<launch>
+
+  <param name="use_sim_time" value="true" />
+  
+  <!-- TF tree -->
+  <node pkg="avs_lecture_sensor_config" type="sensor_tf_pub.py" name="sensor_tf_pub" output="screen" >
+    <rosparam file="$(find dataset_playback)/yaml/sensor_tf_config.yaml" />
+  </node>
+  <node pkg="avs_lecture_maps" type="gps_frame_management.py" name="gps_frame_management" >
+    <param name="odom_topic" value="/sensors/gps/gps/odom" />
+    <param name="map_center_lat" value="42.713325" />
+    <param name="map_center_lon" value="-83.035825" />
+  </node>
+
+  <!-- Drive-by-wire -->
+  <include file="$(find dbw_mkz_can)/launch/dbw.launch" >
+    <arg name="live" value="false"/>
+    <arg name="can_ns" value="/can_bus_dbw" />
+    <arg name="load_urdf" value="true" />
+  </include>
+  
+  <!-- Sensors -->
+  <arg name="ouster1" default="true" />
+  <arg name="ouster2" default="true" />
+  <arg name="cepton" default="true" />
+  <arg name="lrr" default="true" />
+  <arg name="traffic_cam" default="true" />
+  <arg name="dash_cam" default="true" />
+  <group ns="sensors" >
+    
+    <!-- LIDAR -->
+    <group ns="lidar" >
+      <include if="$(arg ouster1)" file="$(find avs_lecture_sensor_config)/launch/ouster_driver.launch" >
+        <arg name="replay"           value="true" />
+        <arg name="name"             value="ouster1" />
+        <arg name="os1_lidar_port"   value="7502" />
+        <arg name="os1_imu_port"     value="7503" />
+        <arg name="lidar_frame_name" value="ouster1" />
+      </include>
+
+      <include if="$(arg ouster2)" file="$(find avs_lecture_sensor_config)/launch/ouster_driver.launch" >
+        <arg name="replay"           value="true" />
+        <arg name="name"             value="ouster2" />
+        <arg name="os1_lidar_port"   value="7502" />
+        <arg name="os1_imu_port"     value="7503" />
+        <arg name="lidar_frame_name" value="ouster2" />
+      </include>
+    </group>
+    
+    <!-- RADAR -->
+    <group ns="lrr" >
+      <node pkg="nodelet" type="nodelet" name="lrr_manager" args="manager" />
+      <node pkg="nodelet" type="nodelet" name="conti_radar" args="load conti_radar_can/ContiRadarNodelet lrr_manager" output="screen" >
+        <remap from="can_tx" to="/can_bus_lrr/can_tx" />
+        <remap from="can_rx" to="/can_bus_lrr/can_rx" />
+        <remap from="twist" to="/vehicle/twist" />
+        <param name="frame_id" value="lrr" />
+      </node>
+      <node pkg="nodelet" type="nodelet" name="object_filter" args="load conti_radar_can/ObjectFilterNodelet lrr_manager" output="screen" >
+        <remap from="twist" to="/vehicle/twist" />
+        <param name="object_filter/filter_objects" value="false" />
+      </node>
+    </group>
+
+    <!-- Cameras -->
+    <group if="$(arg traffic_cam)" ns="traffic_cam" >
+      <!-- Nodelet manager -->
+      <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" cwd="node" output="screen" />
+
+      <!-- Debayer and lens rectification -->
+      <node pkg="nodelet" type="nodelet" name="image_proc_debayer" args="load image_proc/debayer camera_nodelet_manager" />
+      <node pkg="nodelet" type="nodelet" name="image_proc_rectify" args="load image_proc/rectify camera_nodelet_manager" >
+        <remap from="image_mono" to="image_color" />
+        <remap from="image_rect" to="image_rect_color" />
+      </node>
+      
+      <node pkg="image_transport" type="republish" name="republish" args="compressed in:=image_raw raw out:=image_raw" />
+    </group>
+    
+    <group if="$(arg dash_cam)" ns="dash_cam" >
+      <!-- Nodelet manager -->
+      <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" cwd="node" output="screen" />
+
+      <!-- Debayer and lens rectification -->
+      <node pkg="nodelet" type="nodelet" name="image_proc_debayer" args="load image_proc/debayer camera_nodelet_manager" />
+      <node pkg="image_transport" type="republish" name="republish" args="compressed in:=image_raw raw out:=image_raw" />
+    </group>
+    
+  </group>
+
+  <!-- Open Rviz configuration -->
+  <arg name="rviz" default="true" />
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="dataset_playback_viz" args="-d $(find dataset_playback)/rviz/dataset_playback.rviz" />
+  
+</launch>
