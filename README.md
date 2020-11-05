@@ -47,13 +47,13 @@ Play the same `campus_drive_083019.bag` file again. In Rviz, click the "2D Pose 
 ## Camera / LIDAR Fusion
 ![Camera / LIDAR Fusion](img/camera_lidar_fusion.png)
 
-Download `camera_lidar_fusion.bag` to your computer. Start the software:
+Download `cepton_camera_fusion.bag` to your computer. Start the software:
 ```
-roslaunch camera_lidar_project camera_lidar_fusion.launch
+roslaunch camera_lidar_project cepton_camera_fusion.launch
 ```
 Then play the bag file:
 ```
-rosbag play --clock camera_lidar_fusion.bag
+rosbag play --clock cepton_camera_fusion.bag
 ```
 
 ## Stereo Camera Processing (More Info Soon)
