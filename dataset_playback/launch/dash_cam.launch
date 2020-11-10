@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Nodelet manager -->
+  <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" cwd="node" output="screen" />
+
+  <!-- Debayer -->
+  <node pkg="nodelet" type="nodelet" name="image_proc_debayer" args="load image_proc/debayer camera_nodelet_manager" />
+  <node pkg="image_transport" type="republish" name="republish" args="compressed in:=image_raw raw out:=image_raw" />
+
+</launch>

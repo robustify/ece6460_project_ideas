@@ -31,3 +31,19 @@ sensor_tf_configs:
     child_frame: camera
     position: [0.0, 0.0, 0.0]
     orientation: [0.0, 0.0, 0.0]
+  - parent_frame: base_footprint
+    child_frame: stereo_right_optical
+    position: [2.0, -0.2, 1.2]
+    orientation: [0.03, -0.04363, 0.0698]
+  - parent_frame: stereo_right_optical
+    child_frame: stereo_right
+    position: [0.0, 0.0, 0.0]
+    orientation: [-1.5707, 0.0, -1.5707]
+  - parent_frame: base_footprint
+    child_frame: stereo_left
+    position: [2.0, 0.2, 1.2]
+    orientation: [0.03, -0.04363, 0.0698]
+  - parent_frame: stereo_left
+    child_frame: stereo_left_optical
+    position: [0.0, 0.0, 0.0]
+    orientation: [-1.5707, 0.0, -1.5707]
