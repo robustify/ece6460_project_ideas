@@ -1,0 +1,21 @@
+sensor_tf_configs:
+  - parent_frame: base_footprint
+    child_frame: cepton_0
+    position: [3.8, 0.0, 0.55]
+    orientation: [-0.03, 0.0, -1.570796]
+  - parent_frame: cepton_0
+    child_frame: ouster1
+    position: [-0.54, -2.245, 0.8477]
+    orientation: [0.011, 0.243, 2.249]
+  - parent_frame: base_footprint
+    child_frame: lrr
+    position: [3.38, 0.0, 0.55]
+    orientation: [0.0, 0.0, 0.005]
+  - parent_frame: ouster1
+    child_frame: stereo_right
+    position: [-0.0878, -0.533, -0.220]
+    orientation: [-1.2743, 0.2014, -2.0295]
+  - parent_frame: ouster1
+    child_frame: stereo_left
+    position: [0.136, -0.551, -0.157]
+    orientation: [-1.2790, 0.1419, -2.1721]

@@ -14,6 +14,11 @@
 
       <!-- Debayer the image -->
       <node pkg="nodelet" type="nodelet" name="debayer" args="load image_proc/debayer $(arg ns_prefix)/$(arg camera_ns)/camera_nodelet" />
+
+      <!-- Rectify if stereo isn't doing it -->
+      <node unless="$(arg stereo_processing_enabled)" pkg="nodelet" type="nodelet" name="image_proc_rectify" args="load image_proc/rectify $(arg ns_prefix)/$(arg camera_ns)/camera_nodelet" >
+        <remap from="image_mono" to="image_color" />
+      </node>
     </group>
 
     <group ns="right" >
@@ -22,6 +27,11 @@
 
       <!-- Debayer the image -->
       <node pkg="nodelet" type="nodelet" name="debayer" args="load image_proc/debayer $(arg ns_prefix)/$(arg camera_ns)/camera_nodelet" />
+
+      <!-- Rectify if stereo isn't doing it -->
+      <node unless="$(arg stereo_processing_enabled)" pkg="nodelet" type="nodelet" name="image_proc_rectify" args="load image_proc/rectify $(arg ns_prefix)/$(arg camera_ns)/camera_nodelet" >
+        <remap from="image_mono" to="image_color" />
+      </node>
     </group>
 
     <node if="$(arg stereo_processing_enabled)" pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" >
@@ -34,7 +44,7 @@
       <param name="correlation_window_size" value="15" />
       <param name="min_disparity" value="0" />
       <param name="disparity_range" value="64" />
-      
+
       <param name="uniqueness_ratio" value="15.0" />
       <param name="texture_threshold" value="10" />
       <param name="speckle_size" value="100" />

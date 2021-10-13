@@ -2,10 +2,11 @@
 <launch>
 
   <param name="use_sim_time" value="true" />
-  
+  <arg name="tf_config_file" />
+
   <!-- TF tree -->
   <node pkg="avs_lecture_sensor_config" type="sensor_tf_pub.py" name="sensor_tf_pub" output="screen" >
-    <rosparam file="$(find dataset_playback)/yaml/sensor_tf_config.yaml" />
+    <rosparam file="$(arg tf_config_file)" />
   </node>
 
   <!-- Drive-by-wire -->
@@ -14,7 +15,7 @@
     <arg name="can_ns" value="/can_bus_dbw" />
     <arg name="load_urdf" value="true" />
   </include>
-  
+
   <!-- Sensors -->
   <arg name="ouster1_enabled" default="true" />
   <arg name="ouster2_enabled" default="true" />
@@ -26,7 +27,7 @@
   <arg name="stereo_processing_enabled" default="false" />
 
   <group ns="sensors" >
-    
+
     <!-- LIDAR -->
     <group ns="lidar" >
       <include if="$(arg ouster1_enabled)" file="$(find avs_lecture_sensor_config)/launch/ouster_driver.launch" >
@@ -45,7 +46,7 @@
         <arg name="lidar_frame_name" value="ouster2" />
       </include>
     </group>
-    
+
     <!-- RADAR -->
     <include if="$(arg lrr_enabled)" ns="lrr" file="$(find dataset_playback)/launch/radar.launch" />
 
@@ -63,5 +64,5 @@
   <!-- Open Rviz configuration -->
   <arg name="rviz" default="true" />
   <node if="$(arg rviz)" pkg="rviz" type="rviz" name="dataset_playback_viz" args="-d $(find dataset_playback)/rviz/dataset_playback.rviz" />
-  
+
 </launch>

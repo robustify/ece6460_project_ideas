@@ -2,26 +2,20 @@
 
 using namespace cv;
 
-#define CALIBRATE_ALIGNMENT 0
-
 namespace camera_lidar_project
 {
 
 CameraLidarFusion::CameraLidarFusion(ros::NodeHandle n, ros::NodeHandle pn) :
   listener_(buffer_)
 {
-  ros::NodeHandle cam_nh("camera");
+  std::string cam_ns;
+  pn.param("cam_ns", cam_ns, std::string("camera"));
+  ros::NodeHandle cam_nh(cam_ns);
   sub_cam_info_ = cam_nh.subscribe("camera_info", 1, &CameraLidarFusion::recvCameraInfo, this);
-  sub_image_ = cam_nh.subscribe("image_rect_color", 1, &CameraLidarFusion::recvImage, this);
-  sub_lidar_objects_ = n.subscribe("detected_objects", 1, &CameraLidarFusion::recvLidarObjects, this);
-
+  sub_image_ = cam_nh.subscribe("image_rect", 1, &CameraLidarFusion::recvImage, this);
+  sub_lidar_objects_ = n.subscribe("object_tracks", 1, &CameraLidarFusion::recvLidarObjects, this);
+  pub_output_image_ = n.advertise<sensor_msgs::Image>("output_image", 1);
   looked_up_camera_transform_ = false;
-#if CALIBRATE_ALIGNMENT
-  srv_.reset(new dynamic_reconfigure::Server<CameraLidarFusionConfig>);
-  srv_->setCallback(boost::bind(&CameraLidarFusion::reconfig, this, _1, _2));
-#endif
-  namedWindow("Output", cv::WINDOW_NORMAL);
-  // namedWindow("First Object", cv::WINDOW_NORMAL);
 }
 
 // This function is called whenever a new image is received from either
@@ -29,40 +23,32 @@ CameraLidarFusion::CameraLidarFusion(ros::NodeHandle n, ros::NodeHandle pn) :
 // image coming from Gazebo
 void CameraLidarFusion::recvImage(const sensor_msgs::ImageConstPtr& msg)
 {
-  // Convert ROS image message into an OpenCV Mat
-  cv::Mat raw_img = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
-
-  // for (size_t i = 0; i < cam_bboxes_.size(); i++) {
-  //   if (cam_bboxes_[i].x > 0 && (cam_bboxes_[i].x + cam_bboxes_[i].width) < raw_img.cols
-  //       && cam_bboxes_[i].y > 0 && (cam_bboxes_[i].y + cam_bboxes_[i].height) < raw_img.rows
-  //       && cam_bboxes_[i].width > 0 && cam_bboxes_[i].height > 0) {
-  //     cv::Mat first_object_img = raw_img(cam_bboxes_[i]);
-  //     imshow("First Object", first_object_img);
-  //     break;
-  //   }
-  // }
-
-  for (auto& bbox : cam_bboxes_) {
-    cv::rectangle(raw_img, bbox, Scalar(0, 0, 255));
-  }
-
-  cv::pyrDown(raw_img, raw_img, cv::Size(raw_img.cols/2, raw_img.rows/2));
-  imshow("Output", raw_img);
-  waitKey(1);
-}
-
-void CameraLidarFusion::recvLidarObjects(const avs_lecture_msgs::TrackedObjectArrayConstPtr& msg)
-{
-  // Do nothing until the coordinate transform from footprint to camera is valid,
-  // because otherwise there is no point in detecting a lane!
   if (!looked_up_camera_transform_) {
     try {
-      camera_transform_ = buffer_.lookupTransform("base_footprint", "camera", msg->header.stamp);
+      camera_transform_ = buffer_.lookupTransform("base_footprint", msg->header.frame_id, ros::Time(0));
       looked_up_camera_transform_ = true; // Once the lookup is successful, there is no need to keep doing the lookup
                                           // because the transform is constant
     } catch (tf2::TransformException& ex) {
       ROS_WARN_THROTTLE(1.0, "%s", ex.what());
     }
+    return;
+  }
+
+  // Convert ROS image message into an OpenCV Mat
+  cv::Mat raw_img = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
+
+  for (auto& bbox : cam_bboxes_) {
+    // Draw a red rectangle according to bbox geometry. Make the edges 3 pixels.
+    cv::rectangle(raw_img, bbox, Scalar(0, 0, 255), 3);
+  }
+
+  sensor_msgs::ImagePtr output_img_msg = cv_bridge::CvImage(msg->header, "bgr8", raw_img).toImageMsg();
+  pub_output_image_.publish(output_img_msg);
+}
+
+void CameraLidarFusion::recvLidarObjects(const avs_lecture_msgs::TrackedObjectArrayConstPtr& msg)
+{
+  if (!looked_up_camera_transform_) {
     return;
   }
 
@@ -126,19 +112,6 @@ cv::Rect2d CameraLidarFusion::getCamBbox(const avs_lecture_msgs::TrackedObject& 
 void CameraLidarFusion::recvCameraInfo(const sensor_msgs::CameraInfoConstPtr& msg)
 {
   camera_info_ = *msg;
-}
-
-void CameraLidarFusion::reconfig(CameraLidarFusionConfig& config, uint32_t level)
-{
-  tf2::Quaternion q;
-  q.setRPY(config.roll, config.pitch, config.yaw);
-  tf2::convert(q, camera_transform_.transform.rotation);
-  tf2::convert(tf2::Vector3(config.x, config.y, config.z), camera_transform_.transform.translation);
-  looked_up_camera_transform_ = true;
-
-  camera_transform_.header.frame_id = "base_footprint";
-  camera_transform_.child_frame_id = "camera_optical";
-  broadcaster_.sendTransform(camera_transform_);
 }
 
 }
