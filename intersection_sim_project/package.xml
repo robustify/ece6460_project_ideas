@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>intersection_sim_project</name>
+  <version>0.0.0</version>
+  <description>
+    Starting point for a project to simulate traffic lights at intersections in Gazebo
+  </description>
+  <maintainer email="aaa@xyz.com">AAA</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>

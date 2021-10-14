@@ -1,0 +1,11 @@
+- vehicle:
+    x: 0.0
+    y: -220.0
+    z: 0.0
+    yaw: 1.5707
+    start_gear: D
+    urdf_package: intersection_sim_project
+    urdf_path: urdf/intersection_world_model.urdf.xacro
+    pub_odom: true
+    model: mondeo
+    color: white

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Placeholder trajectory follower node (Replace with your controller!) -->
+  <node pkg="avs_lecture_traj_follower" type="avs_lecture_traj_follower" name="traj_follower" output="screen" >
+    <param name="odom_topic" value="/vehicle/perfect_gps/utm" />
+    <remap from="ulc_cmd" to="/vehicle/ulc_cmd" />
+    <remap from="input_trajectory" to="lookahead_trajectory" />
+  </node>
+
+  <!-- Light sequence setup -->
+  <rosparam param="road_intersection_0/light_sequence" >
+    - {color: 'green', duration: 10}
+    - {color: 'yellow', duration: 5}
+    - {color: 'red', duration: 10}
+  </rosparam>
+
+  <!-- Gazebo simulation -->
+  <arg name="gazebo_scenario" default="$(find intersection_sim_project)/yaml/intersection_world_scenario.yaml" />
+  <include file="$(find dataspeed_dbw_gazebo)/launch/dataspeed_dbw_gazebo.launch" >
+    <arg name="sim_param_file" value="$(find intersection_sim_project)/yaml/intersection_world_sim_params.yaml" />
+    <arg name="world_name" value="$(find intersection_sim_project)/worlds/intersection_world.world" />
+  </include>
+
+  <!-- Support nodes -->
+  <node pkg="rostopic" type="rostopic" name="enable_dbw" args="pub /vehicle/enable std_msgs/Empty -1" output="screen" />
+
+  <node pkg="avs_lecture_maps" type="lookahead_generator" name="lookahead_generator" output="screen" >
+    <rosparam file="$(arg gazebo_scenario)" />
+  </node>
+  
+  <node pkg="avs_lecture_maps" type="gps_frame_management.py" name="gps_frame_management" >
+    <rosparam file="$(arg gazebo_scenario)" />
+  </node>
+
+  <include file="$(find dbw_mkz_can)/launch/dbw.launch" >
+    <arg name="live" value="false"/>
+    <arg name="can_ns" value="can_bus_dbw" />
+    <arg name="load_urdf" value="false" />
+  </include>
+
+  <!-- Visualize -->
+  <arg name="rviz" default="true" />
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="sim_viz" args="-d $(find intersection_sim_project)/rviz/simulation.rviz" respawn="true" />
+
+</launch>

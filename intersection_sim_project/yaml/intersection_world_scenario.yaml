@@ -1,0 +1,14 @@
+# Bezier maps file
+route_map_package: intersection_sim_project
+route_map_file: yaml/intersection_world_route_map.yaml
+
+gazebo: true
+map_center_lat: 45.0
+map_center_lon: -81.0
+
+path_resolution: 0.1
+odom_topic: /vehicle/perfect_gps/utm
+ego_route_sequence:
+  - { 'node_id': 7 }
+  - { 'node_id': 9 }
+  - { 'node_id': 7 }
