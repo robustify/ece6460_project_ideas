@@ -14,7 +14,7 @@ CameraLidarFusion::CameraLidarFusion(ros::NodeHandle n, ros::NodeHandle pn) :
   sub_cam_info_ = cam_nh.subscribe("camera_info", 1, &CameraLidarFusion::recvCameraInfo, this);
   sub_image_ = cam_nh.subscribe("image_rect", 1, &CameraLidarFusion::recvImage, this);
   sub_lidar_objects_ = n.subscribe("object_tracks", 1, &CameraLidarFusion::recvLidarObjects, this);
-  pub_output_image_ = n.advertise<sensor_msgs::Image>("output_image", 1);
+  pub_output_image_ = n.advertise<sensor_msgs::Image>("lidar_projection_image", 1);
   looked_up_camera_transform_ = false;
 }
 
@@ -83,11 +83,11 @@ cv::Rect2d CameraLidarFusion::getCamBbox(const avs_lecture_msgs::TrackedObject& 
   int min_y = 99999;
   int max_y = 0;
   for (size_t i = 0; i < xvals.size(); i++) {
-    for (size_t j = 0; j < xvals.size(); j++) {
-      for (size_t k = 0; k < xvals.size(); k++) {
+    for (size_t j = 0; j < yvals.size(); j++) {
+      for (size_t k = 0; k < zvals.size(); k++) {
         tf2::Vector3 cam_vect = transform.inverse() * tf2::Vector3(object.pose.position.x + xvals[i],
-                                                                   object.pose.position.y + yvals[i],
-                                                                   object.pose.position.z + zvals[i]);
+                                                                   object.pose.position.y + yvals[j],
+                                                                   object.pose.position.z + zvals[k]);
         cv::Point2d p = model.project3dToPixel(cv::Point3d(cam_vect.x(), cam_vect.y(), cam_vect.z()));
         if (p.x < min_x) {
           min_x = p.x;
