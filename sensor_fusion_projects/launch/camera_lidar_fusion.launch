@@ -3,24 +3,21 @@
 <launch>
 
   <arg name="cam_ns" default="/sensors/camera/flir/stereo/left" />
-  <arg name="raw_points_topic" default="/sensors/lidar/cepton/points" />
   <arg name="run_darknet" default="false" />
 
   <include file="$(find dataset_playback)/launch/dataset_playback.launch" >
+    <arg name="cepton_enabled" value="true" />
     <arg name="stereo_cam_enabled" value="true" />
-    <arg name="traffic_cam_enabled" value="false" />
-    <arg name="rviz" value="false" />
-    <arg name="tf_config_file" value="$(find camera_lidar_project)/yaml/sensor_tf_config.yaml" />
   </include>
 
   <!-- Example node to get bounding boxes in an image corresponding to LIDAR clusters -->
-  <node pkg="camera_lidar_project" type="camera_lidar_project" name="camera_lidar_fusion" output="screen" >
+  <node pkg="sensor_fusion_projects" type="lidar_obj_projection" name="lidar_obj_projection" output="screen" >
     <param name="cam_ns" value="$(arg cam_ns)" />
   </node>
 
   <!-- Provided version of Homework 4 object tracking -->
   <include file="$(find avs_lecture_sensor_config)/launch/euclidean_clustering.launch" >
-    <arg name="raw_points_topic" value="$(arg raw_points_topic)" />
+    <arg name="raw_points_topic" value="/sensors/lidar/cepton/points" />
   </include>
 
   <!-- YOLO classification -->
@@ -29,9 +26,6 @@
     <arg name="camera_name" value="$(arg cam_ns)" />
   </include>
 
-  <node pkg="rviz" type="rviz" name="camera_lidar_fusion_viz" args="-d $(find camera_lidar_project)/rviz/rviz_config.rviz" respawn="true" />
-
-  <node pkg="rqt_image_view" type="rqt_image_view" name="lidar_projection" args="/output_image" />
-  <node pkg="rqt_image_view" type="rqt_image_view" name="yolo_classification" args="$(arg cam_ns)/yolo_image" />
+  <node pkg="rviz" type="rviz" name="camera_lidar_fusion_viz" args="-d $(find sensor_fusion_projects)/rviz/camera_lidar.rviz" respawn="true" />
 
 </launch>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <include file="$(find dataset_playback)/launch/dataset_playback.launch" >
+    <arg name="cepton_enabled" value="true" />
+    <arg name="lrr_enabled" value="true" />
+    <arg name="stereo_cam_enabled" value="true" />
+  </include>
+
+  <!-- Provided version of Homework 4 object tracking -->
+  <include file="$(find avs_lecture_sensor_config)/launch/euclidean_clustering.launch" >
+    <arg name="raw_points_topic" value="/sensors/lidar/cepton/points" />
+  </include>
+  
+  <node pkg="rviz" type="rviz" name="radar_lidar_fusion_viz" args="-d $(find sensor_fusion_projects)/rviz/radar_lidar.rviz" />
+
+</launch>

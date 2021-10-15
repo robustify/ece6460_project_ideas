@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>camera_lidar_project</name>
+  <name>sensor_fusion_projects</name>
   <version>0.0.0</version>
   <description>
-    Starting point for a project based on fusing camera and LIDAR data
+    Starting points for projects based on fusing camera, LIDAR, and RADAR data
   </description>
   <maintainer email="mtradovn@oakland.edu">Micho Radovnikovich</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>
-  <depend>rospy</depend>
   <depend>image_transport</depend>
   <depend>image_geometry</depend>
   <depend>cv_bridge</depend>

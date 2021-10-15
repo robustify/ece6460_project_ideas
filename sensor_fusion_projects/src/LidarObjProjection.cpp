@@ -1,19 +1,19 @@
-#include "CameraLidarFusion.hpp"
+#include "LidarObjProjection.hpp"
 
 using namespace cv;
 
-namespace camera_lidar_project
+namespace sensor_fusion_projects
 {
 
-CameraLidarFusion::CameraLidarFusion(ros::NodeHandle n, ros::NodeHandle pn) :
+LidarObjProjection::LidarObjProjection(ros::NodeHandle n, ros::NodeHandle pn) :
   listener_(buffer_)
 {
   std::string cam_ns;
   pn.param("cam_ns", cam_ns, std::string("camera"));
   ros::NodeHandle cam_nh(cam_ns);
-  sub_cam_info_ = cam_nh.subscribe("camera_info", 1, &CameraLidarFusion::recvCameraInfo, this);
-  sub_image_ = cam_nh.subscribe("image_rect", 1, &CameraLidarFusion::recvImage, this);
-  sub_lidar_objects_ = n.subscribe("object_tracks", 1, &CameraLidarFusion::recvLidarObjects, this);
+  sub_cam_info_ = cam_nh.subscribe("camera_info", 1, &LidarObjProjection::recvCameraInfo, this);
+  sub_image_ = cam_nh.subscribe("image_rect", 1, &LidarObjProjection::recvImage, this);
+  sub_lidar_objects_ = n.subscribe("object_tracks", 1, &LidarObjProjection::recvLidarObjects, this);
   pub_output_image_ = n.advertise<sensor_msgs::Image>("lidar_projection_image", 1);
   looked_up_camera_transform_ = false;
 }
@@ -21,7 +21,7 @@ CameraLidarFusion::CameraLidarFusion(ros::NodeHandle n, ros::NodeHandle pn) :
 // This function is called whenever a new image is received from either
 // the live running camera driver, a bag file recording, or the simulated
 // image coming from Gazebo
-void CameraLidarFusion::recvImage(const sensor_msgs::ImageConstPtr& msg)
+void LidarObjProjection::recvImage(const sensor_msgs::ImageConstPtr& msg)
 {
   if (!looked_up_camera_transform_) {
     try {
@@ -46,7 +46,7 @@ void CameraLidarFusion::recvImage(const sensor_msgs::ImageConstPtr& msg)
   pub_output_image_.publish(output_img_msg);
 }
 
-void CameraLidarFusion::recvLidarObjects(const avs_lecture_msgs::TrackedObjectArrayConstPtr& msg)
+void LidarObjProjection::recvLidarObjects(const avs_lecture_msgs::TrackedObjectArrayConstPtr& msg)
 {
   if (!looked_up_camera_transform_) {
     return;
@@ -66,7 +66,7 @@ void CameraLidarFusion::recvLidarObjects(const avs_lecture_msgs::TrackedObjectAr
   }
 }
 
-cv::Rect2d CameraLidarFusion::getCamBbox(const avs_lecture_msgs::TrackedObject& object, const tf2::Transform& transform, const image_geometry::PinholeCameraModel& model)
+cv::Rect2d LidarObjProjection::getCamBbox(const avs_lecture_msgs::TrackedObject& object, const tf2::Transform& transform, const image_geometry::PinholeCameraModel& model)
 {
   std::vector<double> xvals(2);
   std::vector<double> yvals(2);
@@ -109,7 +109,7 @@ cv::Rect2d CameraLidarFusion::getCamBbox(const avs_lecture_msgs::TrackedObject& 
   return cam_bbox;
 }
 
-void CameraLidarFusion::recvCameraInfo(const sensor_msgs::CameraInfoConstPtr& msg)
+void LidarObjProjection::recvCameraInfo(const sensor_msgs::CameraInfoConstPtr& msg)
 {
   camera_info_ = *msg;
 }

@@ -10,13 +10,13 @@
 #include <tf2_ros/transform_listener.h>
 #include <image_geometry/pinhole_camera_model.h>
 
-namespace camera_lidar_project
+namespace sensor_fusion_projects
 {
 
-class CameraLidarFusion
+class LidarObjProjection
 {
   public:
-    CameraLidarFusion(ros::NodeHandle n, ros::NodeHandle pn);
+    LidarObjProjection(ros::NodeHandle n, ros::NodeHandle pn);
 
   private:
     void recvImage(const sensor_msgs::ImageConstPtr& msg);
