@@ -35,3 +35,7 @@ Stop the map building software and bag playback. Move the saved point cloud file
 roslaunch lidar_slam_project lidar_localization.launch
 ```
 Play the same `campus_drive_083019.bag` file again. In Rviz, click the "2D Pose Estimate" button, then click where the vehicle starts on the map, drag in the direction of the way the vehicle is facing, and let go. This initializes the localization estimate.
+
+## Fuse LIDAR Localization with Odometry
+
+The LIDAR localization system only outputs new position and orientation estimates at the same rate as the LIDAR, which is 10 Hz. This is usually not sufficient for control applications that require a localization estimate. Therefore, adding vehicle speed and yaw rate with the LIDAR localization and implementing a Kalman filter to provide position and orientation estimates at a higher rate could be very helpful...

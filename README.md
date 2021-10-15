@@ -1,40 +1,53 @@
 # Project Ideas for ECE 6460
 
-This repository contains starting points and configuration for some project ideas that involve processing ROS bag files recorded from a real autonomous test vehicle. The bag files to use for these sample projects can be found here: [https://1drv.ms/f/s!Ar6id-4c-fy3rAeC7-dnhQGdWy6h](https://1drv.ms/f/s!Ar6id-4c-fy3rAeC7-dnhQGdWy6h).
+This repository contains starting points and configuration for some project ideas, some involving processing real data and some involving Gazebo simulations. The bag files to use for these sample projects can be found here: [https://1drv.ms/f/s!Ar6id-4c-fy3rAeC7-dnhQGdWy6h](https://1drv.ms/f/s!Ar6id-4c-fy3rAeC7-dnhQGdWy6h).
 
-The `dataset_playback` package contains a launch file with supporting configuration to play back the data from any of the bag files that are numbered datasets. `dataset_playback.launch` runs the necessary nodes to process the raw data from the bag and set up the TF frame tree to align all the sensor data with the vehicle body frame. It also uses the RTK GNSS position to update a TF frame from a central map frame to the vehicle body frame.
+The `dataset_playback` package contains a launch file with supporting configuration to play back the data from the following bag files:
 
-The numbered dataset bag files are intended for any projects involving real world data, whereas the bag files that are not numbered datasets are intended for the specific project ideas in this repository.
+- `road_data_sample.bag`
+- `road_data_sample_with_labels.bag`
+- `pedestrian.bag`
+- `pedestrian_with_labels.bag`
+- `stereo_camera_example.bag`
+
+`dataset_playback.launch` ([dataset_playback/launch/dataset_playback.launch](dataset_playback/launch/dataset_playback.launch)) runs the necessary nodes to process the raw data from the bag and set up the TF frame tree to align all the sensor data with the vehicle body frame. It also uses the RTK GNSS position to update a TF frame from a central map frame to the vehicle body frame.
 
 ## Projects Using Real Data
 
 ### LIDAR Localization
+
+Use real data from a 3D LIDAR sensor to construct a map of an environment, then use the map for localizing the vehicle as an alternative to GPS.
+
+For more details, see the [project-specific README](lidar_slam_project/README.md)
+
 ![LIDAR Mapping](img/lidar_slam.png)
 
-INTRO HERE
+### Sensor Fusion
 
-### Camera / LIDAR Fusion
-![Camera / LIDAR Fusion](img/camera_lidar_fusion.png)
+Process data from multiple sensors to perceive better information about the environment than is possible with a single sensor.
 
-INTRO HERE
+For more details, see the [project-specific README](sensor_fusion_projects/README.md)
 
-[More Info](camera_lidar_project/README.md)
+![Camera / LIDAR Fusion](img/camera_lidar_fusion.png "Combine data from camera and LIDAR to detect and classify objects")
 
-### Stereo Camera Processing (More Info Soon)
-![Stereo Camera Processing](img/stereo_processing.png)
+![RADAR / LIDAR Fusion](img/radar_lidar_fusion.png "Combine data from RADAR and LIDAR for more robust object tracking")
 
-[More Info](stereo_camera_project/README.md)
+## Simulation Projects
 
-### RADAR / LIDAR Fusion
+### Traffic Light Detection and Control
 
-![RADAR / LIDAR Fusion](img/radar_lidar_fusion.png)
+Detect a traffic light and determine its state in Gazebo, then use that information to control the car to continue through or stop at the intersection.
 
-Download `road_data_sample.bag` to your computer and launch the playback software:
-```
-roslaunch dataset_playback dataset_playback.launch
-```
-Then play the bag file:
-```
-rosbag play --clock road_data_sample.bag
-```
-In Rviz, the pink, blue, and white point clouds are the raw scan data from three different LIDAR sensors. The green boxes are objects detected by the RADAR, and the red arrows visualize the relative velocity of the objects as measured by the RADAR.
+For more details, see the [project-specific README](intersection_sim_project/README.md)
+
+![Gazebo Intersection](img/intersection_sim_gazebo.png)
+![Simulated Cameras](img/intersection_sim.png)
+
+### Interacting with Other Vehicles
+
+Drive around an oval track with other vehicles. There are some two-lane sections that could be used for passing...
+
+For more details, see the [project-specific README](traffic_sim_project/README.md)
+
+![Gazebo Road](img/traffic_sim_gazebo.png)
+![Route Network](img/traffic_sim.png)
