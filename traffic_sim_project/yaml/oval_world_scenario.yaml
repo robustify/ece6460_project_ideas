@@ -1,0 +1,31 @@
+# Bezier maps file
+route_map_package: traffic_sim_project
+route_map_file: yaml/oval_world_route_map.yaml
+
+gazebo: true
+map_center_lat: 45.0
+map_center_lon: -81.0
+
+# Ego vehicle settings for following map route
+path_resolution: 0.5
+preview_dist: 30.0
+odom_topic: /vehicle/perfect_gps/utm
+ego_route_sequence:
+  - { 'node_id': 2 }
+  - { 'node_id': 52, 'speed_limit': 30.0 }
+  - { 'node_id': 27, 'speed_limit': 30.0 }
+  - { 'node_id': 2, 'speed_limit': 30.0 }
+
+# Configure traffic vehicles
+traffic_vehicles:
+  - traffic1:
+      start_dist: 60.0  # Traffic vehicle won't move until simulation car gets this close (60 meters)
+      route_sequence:
+        - { 'node_id': 40 }                      # Start at route map node 40
+        - { 'node_id': 52, 'speed_limit': 25.0 } # Go to route map node 52 at 25 mph, teleport back to node 40
+  - traffic2:
+      start_dist: 60.0  # Traffic vehicle won't move until simulation car gets this close (60 meters)
+      route_sequence:
+        - { 'node_id': 31 }                      # Start at route map node 40
+        - { 'node_id': 18, 'speed_limit': 25.0 } # Go to route map node 18 at 25 mph
+        - { 'node_id': 2, 'speed_limit': 25.0 }  # Continue to route map node 2 at 25 mph, teleport back to node 31

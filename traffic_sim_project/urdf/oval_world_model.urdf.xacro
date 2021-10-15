@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<robot name="oval_world_model" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+  <!-- Necessary includes -->
+  <xacro:include filename="$(arg structure_urdf)" />
+  <xacro:include filename="$(find dataspeed_dbw_gazebo)/urdf/vehicle_gazebo.urdf.xacro" />
+
+  <!-- Bolt-on sensors go here -->
+  <xacro:include filename="$(find dataspeed_dbw_gazebo)/urdf/vehicle_sensors.urdf.xacro" />
+  <xacro:dataspeed_dbw_gazebo_gps name="perfect_gps" parent="base_footprint" x="0.6" y="0" z="1.45" rate="50.0" ref_lat="45.0" ref_lon="-81.0" />
+
+  <xacro:include filename="$(find avs_lecture_launch)/urdf/cepton_vista.urdf.xacro"/>
+  <xacro:Cepton-Vista parent="base_footprint" name="cepton" topic="cepton/points_raw" hz="10" >
+    <origin xyz="3.75 0 0.5" rpy="0 0 0" />
+  </xacro:Cepton-Vista>
+  
+  <xacro:include filename="$(find avs_lecture_launch)/urdf/mono_camera.urdf.xacro"/>
+  <xacro:mono_camera parent="base_footprint" name="front_camera" >
+    <origin xyz="2.1 0.0 1.4" rpy="0 0.45 0" />
+  </xacro:mono_camera>
+    
+</robot>

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Placeholder trajectory follower, object tracking, and ACC nodes (Replace with your controllers!) -->
+  <node pkg="avs_lecture_traj_follower" type="avs_lecture_traj_follower" name="traj_follower" output="screen" >
+    <param name="odom_topic" value="/vehicle/perfect_gps/utm" />
+    <remap from="ulc_cmd" to="trajectory_ulc_cmd" />
+    <remap from="input_trajectory" to="lookahead_trajectory" />
+  </node>
+  
+  <node pkg="avs_lecture_acc" type="avs_lecture_acc" name="acc_node" output="screen" >
+    <remap from="raw_ulc_cmd" to="trajectory_ulc_cmd" />
+  </node>
+  
+  <node pkg="avs_lecture_object_tracker" type="avs_lecture_object_tracker" name="object_tracker" output="screen" >
+  </node>
+
+  <node pkg="avs_lecture_lidar_seg" type="lidar_segmentation" name="lidar_segmentation" output="screen" >
+    <remap from="points" to="/cepton/points_raw" />
+    <param name="target_frame" value="base_footprint" />
+    <param name="num_normal_neighbors" value="5" />
+  </node>
+
+  <!-- Gazebo simulation -->
+  <arg name="gazebo_scenario" default="$(find traffic_sim_project)/yaml/oval_world_scenario.yaml" />
+  <include file="$(find dataspeed_dbw_gazebo)/launch/dataspeed_dbw_gazebo.launch" >
+    <arg name="sim_param_file" value="$(find traffic_sim_project)/yaml/oval_world_sim_params.yaml" />
+    <arg name="world_name" value="$(find traffic_sim_project)/worlds/oval_world.world" />
+  </include>
+  <include file="$(find avs_lecture_launch)/launch/spawn_traffic.launch" >
+    <arg name="gazebo_scenario" value="$(arg gazebo_scenario)" />
+  </include>
+
+  <!-- Support nodes -->
+  <node pkg="rostopic" type="rostopic" name="enable_dbw" args="pub /vehicle/enable std_msgs/Empty -1" output="screen" />
+
+  <node pkg="avs_lecture_maps" type="lookahead_generator" name="lookahead_generator" output="screen" >
+    <rosparam file="$(arg gazebo_scenario)" />
+  </node>
+  
+  <node pkg="avs_lecture_maps" type="gps_frame_management.py" name="gps_frame_management" >
+    <rosparam file="$(arg gazebo_scenario)" />
+  </node>
+
+  <include file="$(find dbw_mkz_can)/launch/dbw.launch" >
+    <arg name="live" value="false"/>
+    <arg name="can_ns" value="can_bus_dbw" />
+    <arg name="load_urdf" value="false" />
+  </include>
+
+  <!-- Visualize -->
+  <arg name="rviz" default="true" />
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="sim_viz" args="-d $(find traffic_sim_project)/rviz/simulation.rviz" respawn="true" />
+
+</launch>

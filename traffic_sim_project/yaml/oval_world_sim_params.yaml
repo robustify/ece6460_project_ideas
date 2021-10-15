@@ -1,0 +1,11 @@
+- vehicle:
+    x: 407.0
+    y: -132.0
+    z: 0.0
+    yaw: -2.68
+    start_gear: D
+    urdf_package: traffic_sim_project
+    urdf_path: urdf/oval_world_model.urdf.xacro
+    pub_odom: true
+    model: mondeo
+    color: white
