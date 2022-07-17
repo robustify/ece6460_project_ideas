@@ -9,7 +9,7 @@ map_center_lon: -81.0
 # Ego vehicle settings for following map route
 path_resolution: 0.5
 preview_dist: 30.0
-odom_topic: /vehicle/perfect_gps/utm
+odom_topic: /vehicle/perfect_gps/odom
 ego_route_sequence:
   - { 'node_id': 2 }
   - { 'node_id': 52, 'speed_limit': 30.0 }

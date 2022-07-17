@@ -7,7 +7,7 @@
   <xacro:include filename="$(find dataspeed_dbw_gazebo)/urdf/vehicle_gazebo.urdf.xacro" />
 
   <!-- Bolt-on sensors go here -->
-  <xacro:include filename="$(find dataspeed_dbw_gazebo)/urdf/vehicle_sensors.urdf.xacro" />
+  <xacro:include filename="$(find avs_lecture_launch)/urdf/vehicle_sensors.urdf.xacro" />
   <xacro:dataspeed_dbw_gazebo_gps name="perfect_gps" parent="base_footprint" x="0.6" y="0" z="1.45" rate="50.0" ref_lat="45.0" ref_lon="-81.0" />
 
   <xacro:include filename="$(find avs_lecture_launch)/urdf/mono_camera.urdf.xacro"/>
