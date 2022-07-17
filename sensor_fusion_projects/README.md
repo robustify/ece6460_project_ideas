@@ -58,7 +58,7 @@ Then play the bag file:
 rosbag play --clock road_data_sample_with_labels.bag
 ```
 
-In Rviz, the green boxes are object data directly reported by the RADAR over CAN. The blue boxes are segmented and tracked objects from the LIDAR. The red arrows visualize the relative velocity of the objects. The length of the arrow represents a projection of one second of relative velocity.
+In Rviz, the transparent grey boxes are object data directly reported by the RADAR over CAN. The blue wireframe boxes are segmented and tracked objects from the LIDAR. The arrows visualize the relative velocity of the objects, with red arrows corresponding to LIDAR object velocity, and purple arrows with RADAR object velocity. The length of an arrow represents a projection of one second of measured relative velocity.
 
 ## Ideas
 

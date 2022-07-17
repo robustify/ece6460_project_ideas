@@ -41,17 +41,11 @@
 
     <!-- RADAR -->
     <group if="$(arg lrr_enabled)" ns="lrr" >
-      <node pkg="nodelet" type="nodelet" name="lrr_manager" args="manager" />
-      <node pkg="nodelet" type="nodelet" name="conti_radar" args="load conti_radar_can/ContiRadarNodelet lrr_manager" output="screen" >
+      <param name="radar_name" value="lrr" />
+      <node pkg="conti_radar_can" type="conti_radar_node" name="conti_radar" output="screen" >
         <remap from="can_tx" to="/can_bus_lrr/can_tx" />
         <remap from="can_rx" to="/can_bus_lrr/can_rx" />
-        <remap from="twist" to="/vehicle/twist" />
-        <param name="frame_id" value="lrr" />
-      </node>
-
-      <node pkg="nodelet" type="nodelet" name="object_filter" args="load conti_radar_can/ObjectFilterNodelet lrr_manager" output="screen" >
-        <remap from="twist" to="/vehicle/twist" />
-        <param name="object_filter/filter_objects" value="false" />
+        <remap from="raw_objects" to="radar_objects" />
       </node>
     </group>
 
