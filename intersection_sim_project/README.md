@@ -3,8 +3,13 @@
 ![Simulated Cameras](../img/intersection_sim.png)
 
 ## Quick-Start Guide
+First, you will need to clone the source code for the Gazebo plugin that runs the simulated traffic lights. To do so, open a terminal in the `src` folder of your ROS workspace and clone the source code repository:
+```
+git clone https://github.com/robustify/gazebo_traffic_light
+```
+After cloning the traffic light code, be sure to compile your ROS workspace.
 
-To run the simulation, run the following launch command:
+Then, to run the simulation, run the following launch command:
 ```
 roslaunch intersection_sim_project sim_launch.launch
 ```
