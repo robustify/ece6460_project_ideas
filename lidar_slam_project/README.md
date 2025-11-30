@@ -9,7 +9,13 @@ git clone https://github.com/robustify/hdl_localization.git
 git clone https://github.com/koide3/ndt_omp.git
 git clone https://github.com/SMRT-AIST/fast_gicp.git --recursive
 ```
-After cloning the repositories, install binary packages they depend on by running `deps.bash` from the root folder of the workspace. Finally, compile your ROS workspace with `release.bash`.
+After cloning the repositories, install binary packages they depend on by running `deps.bash` from the root folder of the workspace. There are two dependencies that need to be installed manually:
+
+```
+sudo apt install ros-noetic-libg2o ros-noetic-nmea-msgs
+```
+
+Finally, compile your ROS workspace with `release.bash`.
 
 Download `campus_drive_083019.bag` to your computer.
 
@@ -24,17 +30,25 @@ rosbag play --clock campus_drive_083019.bag -r 0.75
 ```
 
 ## Save Map
-Call the map save service to save the map to a `.pcd` point cloud file:
+Run the following script from the `lidar_slam_project` package to save the map:
 ```
-rosservice call /hdl_graph_slam/save_map
+rosrun lidar_slam_project save_map.bash
 ```
+This will create a `.pcd` point cloud file and a .pcd.utm text file with the GNSS coordinates of the origin of the map. These files are saved to the `~/.ros` folder.
 
 ## Localize on the Map
-Stop the map building software and bag playback. Move the saved point cloud file and its corresponding `.utm` file into the `data` folder inside the `hdl_localization` package. Then, start the localization software:
+Stop the map building software and bag playback. Move the saved point cloud file and its corresponding `.utm` file from `~/.ros` into the `data` folder inside the `hdl_localization` package. Then, start the localization software:
 ```
 roslaunch lidar_slam_project lidar_localization.launch
 ```
-Play the same `campus_drive_083019.bag` file again. In Rviz, click the "2D Pose Estimate" button, then click where the vehicle starts on the map, drag in the direction of the way the vehicle is facing, and let go. This initializes the localization estimate.
+The localization software needs an initial pose of the vehicle to initialize. This can be done in RViz by clicking the "2D Pose Estimate" button, clicking where the vehicle starts on the map, dragging in the direction of the way the vehicle is facing, and letting go. A more precise way to do this is to just run
+
+```
+rosrun lidar_slam_project initial_pose.bash
+```
+This publishes the equivalent message coming from RViz, but with the correct pose every time.
+
+After starting and initializing the localization software, play the same `campus_drive_083019.bag` file again. The vehicle's position should line up well with the recorded map. If the colorful map point cloud is not visible in RViz, try unchecking and re-checking the box for the map point cloud in the RViz display pane.
 
 ## Fuse LIDAR Localization with Odometry
 
